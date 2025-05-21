@@ -3,15 +3,22 @@
 
 <head>
     <title>Workout</title>
+    <style>
+        body {
+            background-color: powderblue;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
 </head>
-<style>
-    body {
-        background-color: powderblue;
-    }
-</style>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 
 <body>
     <?php
@@ -19,13 +26,41 @@
     //echo '<p>Hello World</p>';
     //echo $_SESSION['id'];
     $date = date('Y-m-d');
-    echo "
-    Add Workout:
-    <form method='post' action='?add_workout=1'>
-        <input type='date' name='datepicker' id='datepicker' value='$date' />
-        <input type='submit' name='Add_Workout' value='Submit'>  <br>
-        <input type='submit' name='View_Workout' value='View/Edit Workouts'> <br>
-        <input type='submit' name='delete_Workout' value='Delete Workout'>
+
+    echo "    <form method='post' action='?add_workout=1'>
+    <table style='width:100%'>
+    <tr>
+    <td>
+    <h1 style='text-align:center'>Add Workout:</h1>
+        <input type='date' name='datepicker' id='datepicker' value='$date' style = 'font-size:20px;
+           margin: auto;
+        display: block;'/>
+        <input type='submit' name='Add_Workout' value='Go' style = 'font-size:20px;
+        padding: 25px 25px 25px 25px;
+        margin: auto;
+        display: block;'>  <br>
+        </td>
+        </tr>
+        <tr>
+        <td>
+            <h1 style='text-align:center'>View/Edit Workouts:</h1>
+        <input type='submit' name='View_Workout' value='Go' style = 'font-size:20px;
+        padding: 25px 25px 25px 25px;
+        margin: auto;
+        display: block;;'> <br>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <h1 style='text-align:center'>Delete Workouts:</h1>
+        <input type='submit' name='delete_Workout' value='Go' style = 'font-size:20px;
+        padding: 25px 25px 25px 25px;
+        margin: auto;
+        display: block;;'>
+        </td>
+        <tr>
+    
+    </table>
     </form>"
     ;
     if (isset($_GET['add_workout'])) {
@@ -74,6 +109,9 @@
         }
         if ($_POST["View_Workout"]) {
             header(header: 'Location: view_workout.php');
+        }
+        if ($_POST["delete_Workout"]) {
+            header(header: 'Location: delete_workout.php');
         }
     }
     ?>

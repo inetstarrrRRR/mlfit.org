@@ -30,6 +30,7 @@
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
+    $user_id = $_SESSION['id'];
     $selected_workout_id = $_SESSION['selected_workout_id'];
     $sql = "SELECT Date FROM Workouts WHERE ID = '$selected_workout_id';";
     $result = mysqli_query($conn, $sql);
@@ -112,6 +113,7 @@
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
+            //var_dump($row);
             $prim_muscles[] = $row['Primary_Muscle'];
         }
     } else {
@@ -120,9 +122,6 @@
 
     //Draw Tables and Dropdowns
     foreach ($prim_muscles as $muscle_group) {
-
-
-
         //Get Exercieses per Muscle Group
         $sql = "SELECT ID, Name FROM Exercises WHERE Primary_Muscle = '$muscle_group';";
         $result = null;
@@ -161,7 +160,7 @@
         <br>
         <label for='reps'>reps:</label>
         <input type='number' id='reps' name='reps' value='0' min = '1'><br>  
-        <input type='submit' value='Submit'>
+        <input type='submit' value='Submit' style = 'font-size:20px;'> 
         </form>      
         <br>
         <br>
@@ -191,7 +190,7 @@
         From Workouts 
         INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID 
         INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID 
-        WHERE Workouts.User_ID = '1' AND Exercises.Primary_Muscle = '$muscle_group';";
+        WHERE Workouts.User_ID = '$user_id' AND Exercises.Primary_Muscle = '$muscle_group';";
         $result = NULL;
         $result = mysqli_query($conn, $sql);
         $ex_perforemd = NULL;
@@ -225,9 +224,10 @@
               From Workouts 
               INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID 
               INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID 
-              WHERE Workouts.User_ID = '1' AND Exercises.ID = '$ex'
+              WHERE Workouts.User_ID = '$user_id' AND Exercises.ID = '$ex'
               Order BY Volume DESC 
               LIMIT 1;";
+            //echo $sql;
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
@@ -236,17 +236,19 @@
             } else {
                 $ex[] = "error";
             }
-            foreach ($topset as $set) {
-                if ('MAX(Sets.Volume)' != 0) {
-                    $table = $table . "<tr>";
-                    $table = $table . "<td>" . $set['Name'] . "</td>";
-                    $table = $table . "<td>" . $set['Reps'] . "</td>";
-                    $table = $table . "<td>" . $set['Weight'] . "</td>";
-                    $table = $table . "<td>" . $set['Volume'] . "</td>";
-                    $table = $table . "<td>" . $set['Date'] . "</td>";
-                    $table = $table . "
+            if ($topset != NULL) {
+                foreach ($topset as $set) {
+                    //var_dump($set);
+                    if ('MAX(Sets.Volume)' != 0) {
+                        $table = $table . "<tr>";
+                        $table = $table . "<td>" . $set['Name'] . "</td>";
+                        $table = $table . "<td>" . $set['Reps'] . "</td>";
+                        $table = $table . "<td>" . $set['Weight'] . "</td>";
+                        $table = $table . "<td>" . $set['Volume'] . "</td>";
+                        $table = $table . "<td>" . $set['Date'] . "</td>";
+                        $table = $table . "
                    </tr>";
-
+                    }
                 }
             }
         }
@@ -255,12 +257,7 @@
         echo "Top Sets: $muscle_group";
         echo $table;
         echo "        </details>";
-
-        //echo $sql;
     }
-
-
-
     mysqli_close($conn);
     ?>
 </body>

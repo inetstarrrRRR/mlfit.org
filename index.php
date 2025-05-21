@@ -16,7 +16,6 @@
 <body>
     <?php
     session_start();
-    echo '<p>Hello World</p>';
     $servername = "localhost";
     $username = "root";
     $password = "";

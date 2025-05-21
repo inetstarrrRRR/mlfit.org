@@ -32,7 +32,6 @@
         $_SESSION['selected_workout_id'] = $workout_id_to_Edit;
         header(header: 'Location: sets.php');
     } else {
-
         $servername = "localhost";
         $username = "root";
         $password = "";
@@ -55,10 +54,12 @@
     INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID
     INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID
     WHERE Workouts.User_ID = '$user_id' ORDER BY Workouts.ID DESC;";
+        //echo $sql;
         $result = mysqli_query($conn, $sql);
+        //var_dump($result);
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
-                //echo $row['ID'];
+                //var_dump($row);
                 //echo "<br>";
                 if ($id != $row['ID']) {
                     $id = $row['ID'];
