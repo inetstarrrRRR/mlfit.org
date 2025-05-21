@@ -57,10 +57,9 @@
         //echo $sql;
         $result = mysqli_query($conn, $sql);
         //var_dump($result);
+        $i = 0;
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
-                //var_dump($row);
-                //echo "<br>";
                 if ($id != $row['ID']) {
                     $id = $row['ID'];
                     if ($sets_from_workout != NULL) {
@@ -68,10 +67,16 @@
                         $sets_from_workout = [];
                     }
                 }
+                $i++;
                 $sets_from_workout[] = $row;
+                if ($result->num_rows == $i) {
+                    $workouts[] = $sets_from_workout;
+                }
             }
             //var_dump($workouts);
+    
             foreach ($workouts as $workout) {
+                //var_dump($workout);
                 //$Workoutdatetext = "Workout: " . $workout[0]['Date'] . " (ID" . $workout[0]['ID'] . ")";
                 $Workoutdatetext = $workout[0]['Date'] . " (ID" . $workout[0]['ID'] . ")";
                 echo "$Workoutdatetext";

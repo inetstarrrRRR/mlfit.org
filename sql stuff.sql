@@ -90,3 +90,14 @@ WHERE
     AND Exercises.ID = '1'
 Order BY Volume DESC
 LIMIT 1;
+
+Select Exercises.Name, Workouts.Date, Workouts.ID, Sets.Reps, Sets.Weight, Sets.Volume, Exercises.ID
+From
+    Workouts
+    INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID
+    INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID
+WHERE
+    Workouts.User_ID = '1'
+    AND Exercises.ID = '87'
+Order BY Volume DESC
+LIMIT 1;
