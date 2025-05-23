@@ -22,7 +22,7 @@
 <body>
     <?php
     session_start();
-    echo '<p>Hello World</p>';
+    //echo '<p>Hello World</p>';
     $servername = "localhost";
     $username = "root";
     $password = "";
@@ -30,6 +30,25 @@
     $user_id = $_SESSION['id'];
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $dbname);
+    //Delete Workouts
+    if (isset($_GET['delete_workout'])) {
+        foreach ($_POST as $name => $val) {
+            $selected_workout_id = $name;
+        }
+        //echo $selected_workout_id;
+        //Write Set to DB
+        $sql = "DELETE FROM Workouts WHERE ID = $selected_workout_id";
+        //echo $sql;
+        //echo $sql;
+        if (mysqli_query($conn, $sql)) {
+            unset($_POST);
+            header('delete_workout.php');
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
+        //Ende Write Set to DB     */
+    }
+    //Show Workouts
     $sql = "Select Workouts.Date, 
     Workouts.ID, 
     Sets.Reps, 
@@ -63,7 +82,7 @@
             $Workoutdatetext = $workout[0]['Date'] . " (ID" . $workout[0]['ID'] . ")";
             echo "$Workoutdatetext";
             $selected_workout_id = $workout[0]['ID'];
-            $Button_for_Edit = "<form method='post' action='?edit_workout=1' style='display: inline;'>   
+            $Button_for_Edit = "<form method='post' action='?delete_workout=1' style='display: inline;'>   
         <input type='submit' name='$selected_workout_id' value='Delete_Workout'> <br>
     </form>";
             echo "$Button_for_Edit";
@@ -92,36 +111,6 @@
             echo $table;
             echo "<br>";
         }
-
-        /*
-        foreach ($sets_from_workout as $set) {
-            if ($id != $set['ID']) {
-                $id = $set['ID'];
-                $table = "
-                <table style='width:100%'>
-                <tr>
-                    <th>Name</th>
-                    <th>Reps</th>
-                    <th>Weight</th>
-                    <th>Volume</th>
-                </tr>";
-                $new_table = True;
-            }
-            $table = $table . "
-                           <tr>
-                           ";
-            $table = $table . "<td>" . $set['Name'] . "</td>";
-            $table = $table . "<td>" . $set['Reps'] . "</td>";
-            $table = $table . "<td>" . $set['Weight'] . "</td>";
-            $table = $table . "<td>" . $set['Volume'] . "</td>";
-            $table = $table . "<td>" . $set['ID'] . "</td>";
-            $table = $table . "
-                          </tr>";
-
-        }
-        $table = $table . "
-                      </table>";
-        echo $table;*/
     } else {
         echo "0 results";
     }
