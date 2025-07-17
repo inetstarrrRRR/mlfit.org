@@ -45,6 +45,21 @@ TABLE Exercises FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (Name, Primary
 SET
     ID = NULL;
 
+create table Sets (
+    ID INT NOT NULL UNIQUE KEY AUTO_INCREMENT,
+    PRIMARY KEY (ID),
+    User_ID int,
+    FOREIGN KEY (User_ID) REFERENCES users (ID),
+    Exercise_ID int,
+    FOREIGN KEY (Exercise_ID) REFERENCES Exercises(ID),
+    Workout_ID int,
+    FOREIGN KEY (Workout_ID) REFERENCES Workouts(ID),
+    Reps int,
+    Weight int,
+    Volume int
+);
+
+
 queries show tables;
 
 describe users;
