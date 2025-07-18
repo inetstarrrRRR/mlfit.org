@@ -1,32 +1,9 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Login</title>
-    <style>
-        body {
-            background-color: powderblue;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-    </style>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-</head>
-
-<body>
-    <?php
-    session_start();
+<?php session_start();
     //echo '<p>Hello World</p>';
-    $servername = "localhost";
-    $username = "root";
+ 	$servername = "db5018212067.hosting-data.io";
+    $username = "dbu3658664";
     $password = "";
-    $dbname = "workout_site";
+    $dbname = "dbs14428786";
     $user_id = $_SESSION['id'];
     // Create connection
     $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -42,7 +19,7 @@
         //echo $sql;
         if (mysqli_query($conn, $sql)) {
             unset($_POST);
-            header('delete_workout.php');
+            //header('delete_workout.php');
         } else {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }
@@ -118,8 +95,31 @@
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }
-
     ?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            background-color: powderblue;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+</head>
+
+<body>
+   <a href="workouts.php">Back</a> <br>
 </body>
 
 </html>
