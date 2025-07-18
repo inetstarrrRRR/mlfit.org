@@ -1,6 +1,16 @@
+<?php session_start();
+	$servername = "db5018212067.hosting-data.io";
+    $username = "dbu3658664";
+    $password = "";
+    $dbname = "dbs14428786";
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+?>
+
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Sets</title>
     <style>
@@ -13,23 +23,27 @@
         td {
             border: 1px solid black;
         }
+      details>summary {
+ 
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none
+}
+
+summary::after {
+  content: ' ►';
+}
+details[open] summary:after {
+  content: " ▼";
+}
     </style>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 </head>
-
 <body>
     <?php
-    session_start();
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "workout_site";
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
     $user_id = $_SESSION['id'];
     $selected_workout_id = $_SESSION['selected_workout_id'];
     $sql = "SELECT Date FROM Workouts WHERE ID = '$selected_workout_id';";
@@ -54,7 +68,7 @@
         //echo $sql;
         if (mysqli_query($conn, $sql)) {
             unset($_POST);
-            header('sets.php');
+            //header('sets.php');
         } else {
             echo "Error: " . $sql . "<br>" . mysqli_error($conn);
         }
@@ -103,11 +117,7 @@
         } else {
             echo "$sql";
         }
-
     }
-
-
-
     //Get Muscle Group for Tables
     $sql = "SELECT DISTINCT Primary_Muscle FROM Exercises;";
     $result = mysqli_query($conn, $sql);
@@ -260,6 +270,7 @@
     }
     mysqli_close($conn);
     ?>
+  <a href="workouts.php">Back</a> <br>
 </body>
 
 </html>
