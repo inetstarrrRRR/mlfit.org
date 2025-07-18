@@ -1,28 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-
-<head>
-    <title>Workouts</title>
-    <style>
-        body {
-            background-color: powderblue;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px solid black;
-        }
-    </style>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-</head>
-
-<body>
-    <?php
-    session_start();
+<?php session_start();
     //echo '<p>Hello World</p>';
     //echo $_SESSION['id'];
     if (isset($_GET['edit_workout'])) {
@@ -32,10 +8,10 @@
         $_SESSION['selected_workout_id'] = $workout_id_to_Edit;
         header(header: 'Location: sets.php');
     } else {
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "workout_site";
+          $servername = "db5018212067.hosting-data.io";
+          $username = "dbu3658664";
+          $password = "";
+          $dbname = "dbs14428786";
         $user_id = $_SESSION['id'];
         //echo $user_id;
         echo "<h1 style='text-align:center'>Workouts:</h1>";
@@ -143,11 +119,29 @@
         } else {
             echo "0 results";
         }
-
         mysqli_close($conn);
     }
-
     ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workouts</title>
+    <style>
+        body {
+            background-color: powderblue;
+        }
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+
 </body>
 
 
