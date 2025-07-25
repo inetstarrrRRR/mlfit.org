@@ -1,16 +1,18 @@
 <?php session_start();
-	$servername = "db5018212067.hosting-data.io";
-    $username = "dbu3658664";
-    $password = "";
-    $dbname = "dbs14428786";
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+$string = file_get_contents("dbconf.ini");
+$json_a = json_decode($string);
+$servername = $json_a->servername;
+$username = $json_a->username;
+$password = $json_a->password;
+$dbname = $json_a->dbname;
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 ?>
-
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Sets</title>
     <style>
@@ -23,31 +25,34 @@
         td {
             border: 1px solid black;
         }
-      details>summary {
- 
-  list-style: none;
-}
-summary::-webkit-details-marker {
-  display: none
-}
 
-summary::after {
-  content: ' ►';
-}
-details[open] summary:after {
-  content: " ▼";
-}
+        details>summary {
+
+            list-style: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none
+        }
+
+        summary::after {
+            content: ' ►';
+        }
+
+        details[open] summary:after {
+            content: " ▼";
+        }
     </style>
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 </head>
+
 <body>
     <?php
     $user_id = $_SESSION['id'];
     $selected_workout_id = $_SESSION['selected_workout_id'];
-    $sql = "SELECT Date FROM Workouts WHERE ID = '$selected_workout_id';";
-    $result = mysqli_query($conn, $sql);
+    //$sql = "SELECT Date FROM Workouts WHERE ID = '$selected_workout_id';";
+    $query = "SELECT Date FROM Workouts WHERE ID = ?;";
+    $result = mysqli_execute_query($conn, $query, params: [$selected_workout_id]);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $selected_workout_date = $row['Date'];
@@ -58,15 +63,17 @@ details[open] summary:after {
     echo "Workout $selected_workout_date (ID:$selected_workout_id)";
     if (isset($_GET['muscle_g'])) {
         //Write Set to DB
-        $x_seleted = $_POST['ex'];
+        $x_selected = $_POST['ex'];
         $weight = $_POST['weight'];
         $reps = $_POST['reps'];
         $workout_id = $_SESSION['selected_workout_id'];
         $volume = $reps * $weight;
-        $sql = "INSERT INTO Sets (Reps, Weight, Volume, Workout_ID, Exercise_ID)
-    VALUES ('$reps', $weight, $volume, $workout_id, $x_seleted);";
+        //$sql = "INSERT INTO Sets (Reps, Weight, Volume, Workout_ID, Exercise_ID)
+        //VALUES ('$reps', $weight, $volume, $workout_id, $x_seleted);";
+        $query = "INSERT INTO Sets (Reps, Weight, Volume, Workout_ID, Exercise_ID)
+    VALUES (?,?,?,?,?);";
         //echo $sql;
-        if (mysqli_query($conn, $sql)) {
+        if (mysqli_execute_query($conn, $query, params: [$reps, $weight, $volume, $workout_id, $x_selected])) {
             unset($_POST);
             //header('sets.php');
         } else {
@@ -74,15 +81,19 @@ details[open] summary:after {
         }
         //Ende Write Set to DB          
     }
-
     //Draw Sets from Workout
     $selected_workout_id = $_SESSION['selected_workout_id'];
-    $sql = "select Sets.ID, Reps, Weight,Volume,Workout_ID, Primary_Muscle, Name
+    /*$sql = "select Sets.ID, Reps, Weight,Volume,Workout_ID, Primary_Muscle, Name
                From Sets 
                INNER JOIN Exercises 
                ON Sets.Exercise_ID = Exercises.ID 
-               WHERE Workout_ID = '$selected_workout_id';";
-    $result = mysqli_query($conn, $sql);
+               WHERE Workout_ID = '$selected_workout_id';";*/
+    $query = "select Sets.ID, Reps, Weight,Volume,Workout_ID, Primary_Muscle, Name
+               From Sets 
+               INNER JOIN Exercises 
+               ON Sets.Exercise_ID = Exercises.ID 
+               WHERE Workout_ID = ?;";
+    $result = mysqli_execute_query($conn, $query, [$selected_workout_id]);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             $sets_from_workout[] = $row;
@@ -115,12 +126,13 @@ details[open] summary:after {
                        </table>";
             echo $table;
         } else {
-            echo "$sql";
+            echo "$query";
         }
     }
     //Get Muscle Group for Tables
-    $sql = "SELECT DISTINCT Primary_Muscle FROM Exercises;";
-    $result = mysqli_query($conn, $sql);
+    //$sql = "SELECT DISTINCT Primary_Muscle FROM Exercises;";
+    $query = $sql = "SELECT DISTINCT Primary_Muscle FROM Exercises;";
+    $result = mysqli_execute_query($conn, $query, []);
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             //var_dump($row);
@@ -129,14 +141,14 @@ details[open] summary:after {
     } else {
         echo "user not found";
     }
-
     //Draw Tables and Dropdowns
     foreach ($prim_muscles as $muscle_group) {
         //Get Exercieses per Muscle Group
-        $sql = "SELECT ID, Name FROM Exercises WHERE Primary_Muscle = '$muscle_group';";
+        //$sql = "SELECT ID, Name FROM Exercises WHERE Primary_Muscle = '$muscle_group';";
+        $query = "SELECT ID, Name FROM Exercises WHERE Primary_Muscle = ?;";
         $result = null;
         $ex = null;
-        $result = mysqli_query($conn, $sql);
+        $result = mysqli_execute_query($conn, $query, [$muscle_group]);
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
                 $ex[] = $row;
@@ -166,7 +178,7 @@ details[open] summary:after {
         </select>
         <br>
         <label for='weight'>weight:</label>
-        <input type='number' id='weight' name='weight' value='0' min = '1'>
+        <input type='number' id='weight' name='weight' value='0' min = '1' step='0.01'>
         <br>
         <label for='reps'>reps:</label>
         <input type='number' id='reps' name='reps' value='0' min = '1'><br>  
@@ -196,13 +208,18 @@ details[open] summary:after {
                 DESC;";
         */
         //get exercies perfmored 
-        $sql = "Select DISTINCT Exercises.ID 
+        /*$sql = "Select DISTINCT Exercises.ID 
         From Workouts 
         INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID 
         INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID 
-        WHERE Workouts.User_ID = '$user_id' AND Exercises.Primary_Muscle = '$muscle_group';";
+        WHERE Workouts.User_ID = '$user_id' AND Exercises.Primary_Muscle = '$muscle_group';";*/
+        $query = "Select DISTINCT Exercises.ID 
+        From Workouts 
+        INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID 
+        INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID 
+        WHERE Workouts.User_ID = ? AND Exercises.Primary_Muscle = ?;";
         $result = NULL;
-        $result = mysqli_query($conn, $sql);
+        $result = mysqli_execute_query($conn, $query, params: [$user_id, $muscle_group]);
         $ex_perforemd = NULL;
         if (mysqli_num_rows($result) > 0) {
             while ($row = mysqli_fetch_assoc($result)) {
@@ -224,6 +241,7 @@ details[open] summary:after {
         foreach ($ex_perforemd as $ex) {
             $topset = Null;
             $result = Null;
+            /*
             $sql = "Select Exercises.Name,
               Workouts.Date, 
               Workouts.ID, 
@@ -237,8 +255,22 @@ details[open] summary:after {
               WHERE Workouts.User_ID = '$user_id' AND Exercises.ID = '$ex'
               Order BY Volume DESC 
               LIMIT 1;";
+              */
+            $query = "Select Exercises.Name,
+              Workouts.Date, 
+              Workouts.ID, 
+              Sets.Reps, 
+              Sets.Weight, 
+              Sets.Volume,
+              Exercises.ID 
+              From Workouts 
+              INNER JOIN Sets ON Workouts.ID = Sets.Workout_ID 
+              INNER JOIN Exercises ON Sets.Exercise_ID = Exercises.ID 
+              WHERE Workouts.User_ID = ? AND Exercises.ID = ?
+              Order BY Volume DESC 
+              LIMIT 1;";
             //echo $sql;
-            $result = mysqli_query($conn, $sql);
+            $result = mysqli_execute_query($conn, $query, [$user_id, $ex]);
             if (mysqli_num_rows($result) > 0) {
                 while ($row = mysqli_fetch_assoc($result)) {
                     $topset[] = $row;
@@ -270,7 +302,7 @@ details[open] summary:after {
     }
     mysqli_close($conn);
     ?>
-  <a href="workouts.php">Back</a> <br>
+    <a href="workouts.php">Back</a> <br>
 </body>
 
 </html>
