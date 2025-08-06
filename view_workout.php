@@ -46,6 +46,8 @@ if (isset($_GET['edit_workout'])) {
     $result = mysqli_execute_query($conn, $query, [$user_id]);
     //var_dump($result);
     $i = 0;
+    $id = 0;
+    $sets_from_workout = [];
     if (mysqli_num_rows($result) > 0) {
         while ($row = mysqli_fetch_assoc($result)) {
             if ($id != $row['ID']) {

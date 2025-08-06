@@ -53,6 +53,9 @@ $query = "Select Workouts.Date,
     WHERE Workouts.User_ID = ? ORDER BY Workouts.ID DESC;";
 $result = mysqli_execute_query($conn, $query, [$user_id]);
 //var_dump($result);
+$id = 0;
+$sets_from_workout = [];
+$i = 0;
 if (mysqli_num_rows($result) > 0) {
     while ($row = mysqli_fetch_assoc($result)) {
         if ($id != $row['ID']) {
