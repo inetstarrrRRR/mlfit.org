@@ -48,17 +48,20 @@ if (isset($_GET['add_workout'])) {
 }
 ?>
 <html>
+
 <head>
     <title>Workout</title>
     <style>
         body {
             background-color: powderblue;
         }
+
         table,
         th,
         td {
             border: 1px solid black;
         }
+
         a:link,
         a:visited {
             background-color: buttonface;
@@ -75,14 +78,15 @@ if (isset($_GET['add_workout'])) {
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
+
 <body>
     <form method='post' action='?add_workout=1'>
         <table style='width:100%'>
             <tr>
                 <td>
                     <h1 style='text-align:center'>Add Workout: <br>
-                    <a href="add_workout_today.php">Today</a> <br>
-                    or Pick a Date
+                        <a href="add_workout_today.php">Today</a> <br>
+                        or Pick a Date
                     </h1>
                     <input type='date' name='datepicker' id='datepicker' style='font-size:20px;
            margin: auto;
@@ -102,9 +106,24 @@ if (isset($_GET['add_workout'])) {
                 <td>
                     <a href="delete_Workout.php">Delete Workouts</a> <br>
                 </td>
+            </tr>
             <tr>
-
+                <td>
+                    <a href="ex_progress.php">Exercise Progress</a> <br>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="add_fav_ex.php">Edit Favourite Exercises</a> <br>
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    <a href="edit_custom_ex.php">Edit Custom Exercises</a> <br>
+                </td>
+            </tr>
         </table>
     </form>
 </body>
+
 </html>
