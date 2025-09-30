@@ -31,6 +31,12 @@ if (!$conn) {
             list-style: none;
         }
 
+        select {
+            height: 46px;
+            font-size: 14pt;
+            box-sizing: border-box;
+        }
+
         summary::-webkit-details-marker {
             display: none
         }
@@ -42,6 +48,37 @@ if (!$conn) {
         details[open] summary:after {
             content: " ▼";
         }
+
+        .back_table_btn {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: black;
+            background-color: #e0e0e0;
+            /* light grey like default buttons */
+            border: 1px solid #999;
+            border-radius: 4px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .back_table_btn:hover {
+            background-color: #d5d5d5;
+            /* slightly darker grey on hover */
+        }
+
+        .adjust-btn {
+            height: 46px;
+            font-size: 14pt;
+            padding: 0 10px;
+            box-sizing: border-box;
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+            /* negative moves button up */
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
@@ -50,6 +87,8 @@ if (!$conn) {
     <?php
     $user_id = $_SESSION['id'];
     $selected_workout_id = $_SESSION['selected_workout_id'];
+    $weight_steps = [1, 10];
+    $rep_steps = [1, 5];
     //$sql = "SELECT Date FROM Workouts WHERE ID = '$selected_workout_id';";
     $query = "SELECT Date FROM Workouts WHERE ID = ?;";
     $result = mysqli_execute_query($conn, $query, params: [$selected_workout_id]);
@@ -142,48 +181,54 @@ if (!$conn) {
         while ($row = mysqli_fetch_assoc($result)) {
             $last_set = $row;
         }
-        if ($last_set != NULL) {        
+        if ($last_set != NULL) {
             $name = $last_set['Name'];
             $id = $last_set['Ex_ID'];
             $weight = $last_set['Weight'];
             $reps = $last_set['Reps'];
             $muscle_group = $last_set['Primary_Muscle'];
-            $last_set = "<option value='$id'>$name</option>";
+            #$last_set = "<option value='$id'>$name</option>";
+            $last_set_name = $name;
+            $last_set_id = $id;
             echo "
             <table style='width:100%'>
             <tr>
             <th>
             Add Last Set
             <br>
-            <form method='post' action='?muscle_g=$muscle_group'>
-            <select name='ex' id='ex' style = 'font-size:20px;'>
-            $last_set
-            </select>
-            <br>
-
-            <label for='weight'>Weight:</label>
-            <input style='height:40px;
-            width:60px;
-            font-size:14pt;' 
-            type='number' 
-            id='weight' 
-            name='weight' 
-            value='" . $weight . "' 
-            min = '1' 
-            step='0.01'>    
-
-            <label for='reps'>Reps:</label>
-            <input style='height:40px;
-            width:60px;
-            font-size:14pt;' 
-            type='number' 
-            id='reps' 
-            name='reps'
-            value='" . $reps . "' 
-            min = '1'><br>  
-
-            <input type='submit' value='Submit' style = 'font-size:20px;'> 
-            </form>      
+            <form method='post' action='?muscle_g=$muscle_group'> 
+                <label style='font-size:20px;'>$last_set_name</label>
+                <input type='hidden' name='ex' value='$last_set_id '>
+                <br>
+                <label for='weight'>Weight:</label>
+                <br>
+                <button type='button' onclick='changeValue(\"last_exe_weight\",-1)' class='adjust-btn'>-1</button>
+                <button type='button' onclick='changeValue(\"last_exe_weight\",-10)' class='adjust-btn'>-10</button>
+                <input style='height:40px;width:60px;font-size:14pt;' 
+                    type='number' 
+                    id='last_exe_weight' 
+                    name='weight' 
+                    value='" . $weight . "' 
+                    min='1' 
+                    step='0.01'>                        
+                <button type='button' onclick='changeValue(\"last_exe_weight\",1)' class='adjust-btn'>+1</button>
+                <button type='button' onclick='changeValue(\"last_exe_weight\",10)' class='adjust-btn'>+10</button>
+                <br>
+                <label for='reps'>Reps:</label>
+                <br>
+                <button type='button' onclick='changeValue(\"last_exe_reps\",-1)' class='adjust-btn'>-1</button>
+                <button type='button' onclick='changeValue(\"last_exe_reps\",-5)' class='adjust-btn'>-5</button>
+                <input style='height:40px;width:60px;font-size:14pt;' 
+                    type='number' 
+                    id='last_exe_reps' 
+                    name='reps'
+                    value='" . $reps . "' 
+                    min='1'>
+                <button type='button' onclick='changeValue(\"last_exe_reps\",1)' class='adjust-btn'>+1</button>
+                <button type='button' onclick='changeValue(\"last_exe_reps\",5)' class='adjust-btn'>+5</button>
+                <br><br>
+                <input type='submit' value='Submit' style='font-size:20px;'> 
+            </form>
             <br>
             <br>
             <br>
@@ -265,26 +310,36 @@ if (!$conn) {
         <br>
 
         <label for='weight'>Weight:</label>
+        <br>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_weight\",-1)' class='adjust-btn'>-1</button>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_weight\",-10)' class='adjust-btn'>-10</button>
         <input style='height:40px;
         width:60px;
         font-size:14pt;' 
         type='number' 
-        id='weight' 
+        id='" . $muscle_group . "_weight' 
         name='weight' 
         value='0' 
         min = '1' 
         step='0.01'>    
-
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_weight\",1)' class='adjust-btn'>1</button>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_weight\",10)' class='adjust-btn'>10</button>
+        <br>
         <label for='reps'>Reps:</label>
+        <br>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_reps\",-1)' class='adjust-btn'>-1</button>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_reps\",-5)' class='adjust-btn'>-5</button>
         <input style='height:40px;
         width:60px;
         font-size:14pt;' 
         type='number' 
-        id='reps' 
+        id='" . $muscle_group . "_reps' 
         name='reps'
         value='0' 
-        min = '1'><br>  
-
+        min = '1'>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_reps\",1)' class='adjust-btn'>1</button>
+        <button type='button' onclick='changeValue(\"" . $muscle_group . "_reps\",5)' class='adjust-btn'>5</button>
+        <br>  
         <input type='submit' value='Submit' style = 'font-size:20px;'> 
         </form>      
         <br>
@@ -421,7 +476,27 @@ if (!$conn) {
     }
     mysqli_close($conn);
     ?>
-    <a href="workouts.php">Back</a> <br>
+    <table style="width:100%">
+        <tr>
+            <th style="width:50%"> <a href="workouts.php" class='back_table_btn'>Back</a> <br> </th>
+            <th style="width:50%"> <a href="custom_ex.php" class='back_table_btn'>Hide/<br>Add Exercieses</a> <br> </th>
+    </table>
+    <script>
+        function changeValue(inputId, delta) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            let value = parseFloat(input.value) || 0;
+            value += delta;
+
+            if (input.min !== '') {
+                const min = parseFloat(input.min);
+                if (value < min) value = min;
+            }
+
+            input.value = value;
+        }
+    </script>
 </body>
 
 </html>
